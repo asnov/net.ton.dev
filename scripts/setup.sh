@@ -17,10 +17,11 @@ until [ "$(echo "${MY_ADDR}" | grep "\." -o | wc -l)" -eq 3 ] ; do
 done
 echo "INFO: MY_ADDR = ${MY_ADDR}"
 
-sudo rm -rf "${TON_WORK_DIR}"
+rm -rf "${TON_WORK_DIR}"
 
-sudo mkdir -p "${TON_WORK_DIR}"
-sudo chown "${SETUP_USER}:${SETUP_GROUP}" "${TON_WORK_DIR}"
+mkdir -p "${TON_LOG_DIR}"
+mkdir -p "${TON_WORK_DIR}"
+chown "${SETUP_USER}:${SETUP_GROUP}" "${TON_WORK_DIR}"
 mkdir -p "${TON_WORK_DIR}/etc"
 mkdir -p "${TON_WORK_DIR}/db"
 
@@ -29,8 +30,8 @@ cp "${CONFIGS_DIR}/${NETWORK_TYPE}/ton-global.config.json" "${TON_WORK_DIR}/etc/
 echo "INFO: generate initial ${TON_WORK_DIR}/db/config.json..."
 "${TON_BUILD_DIR}/validator-engine/validator-engine" -C "${TON_WORK_DIR}/etc/ton-global.config.json" --db "${TON_WORK_DIR}/db" --ip "${MY_ADDR}"
 
-sudo mkdir -p "${KEYS_DIR}"
-sudo chown "${SETUP_USER}:${SETUP_GROUP}" "${KEYS_DIR}"
+mkdir -p "${KEYS_DIR}"
+chown "${SETUP_USER}:${SETUP_GROUP}" "${KEYS_DIR}"
 chmod 700 "${KEYS_DIR}"
 
 cd "${KEYS_DIR}"
@@ -57,7 +58,7 @@ awk '{
         if ($1 == "\"control\"") {
             print "      {";
             print "         \"id\": \"" server_id "\","
-            print "         \"port\": 3030,"
+            print "         \"port\": 7070,"
             print "         \"allowed\": ["
             print "            {";
             print "               \"id\": \"" client_id "\","
@@ -68,7 +69,7 @@ awk '{
         } else if ($1 == "\"liteservers\"") {
             print "      {";
             print "         \"id\": \"" liteserver_id "\","
-            print "         \"port\": 3031"
+            print "         \"port\": 7071"
             print "      }";
         }
     }
