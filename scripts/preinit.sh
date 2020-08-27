@@ -116,7 +116,7 @@ awk -v LITESERVER_PORT="${LITESERVER_PORT}" '{
         } else if ($1 == "\"control\"") {
             print "      {";
             print "         \"id\": \"" server_id "\",";
-            print "         \"port\": 7070,";
+            print "         \"port\": 4040,";
             print "         \"allowed\": [";
             print "            {";
             print "               \"id\": \"" client_id "\",";
