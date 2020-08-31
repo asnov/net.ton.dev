@@ -14,18 +14,18 @@ STAKE="${1:-100000}"
 
 "${TON_BUILD_DIR}/lite-client/lite-client" \
     -p "${KEYS_DIR}/liteserver.pub" \
-    -a 127.0.0.1:7071 \
+    -a 127.0.0.1:3031 \
     -rc "getconfig 1" -rc "quit" \
     &>"${KEYS_DIR}/elector-addr"
 
 awk -v KEYS_DIR="${KEYS_DIR}" -v TON_BUILD_DIR="${TON_BUILD_DIR}" '{
     if (substr($1, length($1)-13) == "ConfigParam(1)") {
         printf TON_BUILD_DIR "/lite-client/lite-client ";
-        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
         printf "-rc \"runmethod -1:" substr($4, 15, 64) " ";
         print  "active_election_id\" -rc \"quit\" &> " KEYS_DIR "/elector-state"
         printf TON_BUILD_DIR "/lite-client/lite-client ";
-        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
         printf "-rc \"runmethod -1:" substr($4, 15, 64) " ";
         print  "election_data\" -rc \"getconfig -32\" -rc \"quit\" &> " KEYS_DIR "/election-data"
         printf TON_BUILD_DIR "/utils/convert_address -1:" substr($4, 15, 64) " base64 -b > "
@@ -63,7 +63,7 @@ if [ "$election_id" == "0" ]; then
             addr = substr($5, 4)
         } else if (substr($1, length($1)-13) == "ConfigParam(1)") {
             printf TON_BUILD_DIR "/lite-client/lite-client ";
-            printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+            printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
             printf "-rc \"runmethod -1:" substr($4, 15, 64);
             printf " compute_returned_stake 0x" addr "\" ";
             print  " -rc \"quit\" &> " KEYS_DIR "/recover-state"
@@ -89,7 +89,7 @@ if [ "$election_id" == "0" ]; then
         awk -v KEYS_DIR="${KEYS_DIR}" -v TON_BUILD_DIR="${TON_BUILD_DIR}" '{
             if ($1 == "Bounceable") {
                 printf TON_BUILD_DIR "/lite-client/lite-client ";
-                printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+                printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
                 print  "-rc \"getaccount " $6 "\" -rc \"quit\" &> " KEYS_DIR "/recover-state"
             }
         }' "${KEYS_DIR}/${HOSTNAME}-dump" >"${KEYS_DIR}/recover-run1"
@@ -111,7 +111,7 @@ if [ "$election_id" == "0" ]; then
                 printf "-s wallet.fif " KEYS_DIR "/" validator " " elector " " seqno " ";
                 print  "1 -B " KEYS_DIR "/recover-query.boc " KEYS_DIR "/recover-wallet-query";
                 printf TON_BUILD_DIR "/lite-client/lite-client ";
-                printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 "
+                printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 "
                 print  "-rc \"sendfile " KEYS_DIR "/recover-wallet-query.boc\" -rc \"quit\""
             }
         }' "${KEYS_DIR}/elector-addr-base64" "${KEYS_DIR}/recover-state" >"${KEYS_DIR}/recover-run2"
@@ -131,7 +131,7 @@ fi
 awk -v KEYS_DIR="${KEYS_DIR}" -v TON_BUILD_DIR="${TON_BUILD_DIR}" '{
     if ($1 == "Bounceable") {
         printf TON_BUILD_DIR "/lite-client/lite-client ";
-        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
         print  "-rc \"getaccount " $6 "\" -rc \"quit\" &> " KEYS_DIR "/wallet-state"
     }
 }' "${KEYS_DIR}/${HOSTNAME}-dump" >"${KEYS_DIR}/wallet-state-run"
@@ -179,20 +179,20 @@ date +"INFO: %F %T election_id = $election_id"
 "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:3030 \
     -c "newkey" -c "quit" \
     &>"${KEYS_DIR}/${HOSTNAME}-election-key"
 
 "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:3030 \
     -c "newkey" -c "quit" \
     &>"${KEYS_DIR}/${HOSTNAME}-election-adnl-key"
 
 "${TON_BUILD_DIR}/lite-client/lite-client" \
     -p "${KEYS_DIR}/liteserver.pub" \
-    -a 127.0.0.1:7071 \
+    -a 127.0.0.1:3031 \
     -rc "getconfig 15" -rc "quit" \
     &>"${KEYS_DIR}/elector-params"
 
@@ -217,7 +217,7 @@ awk -v validator="$HOSTNAME" -v KEYS_DIR="${KEYS_DIR}" -v TON_BUILD_DIR="${TON_B
         time = time + t[2] + 0;
         election_stop = time;
         printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
+        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
         printf "-c \"addpermkey " key " " election_start " " election_stop "\" ";
         printf "-c \"addtempkey " key " " key " " election_stop "\" ";
         printf "-c \"addadnl " key_adnl " 0\" ";
@@ -243,7 +243,7 @@ awk -v validator="$HOSTNAME" -v KEYS_DIR="${KEYS_DIR}" -v TON_BUILD_DIR="${TON_B
         request = $1
     } else if (($1 == "created") && ($2 == "new") && ($3 == "key")) {
         printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
+        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
         printf "-c \"exportpub " $4 "\" ";
         print  "-c \"sign " $4 " " request "\" &> " KEYS_DIR "/" validator "-request-dump1"
    }
@@ -292,7 +292,7 @@ awk -v validator="$HOSTNAME" -v KEYS_DIR="${KEYS_DIR}" -v stake="$STAKE" -v TON_
         printf stake ". -B " KEYS_DIR "/" validator "-query.boc " KEYS_DIR "/" validator "-wallet-query ";
         print  "> " KEYS_DIR "/" validator "-query-dump";
         printf TON_BUILD_DIR "/lite-client/lite-client ";
-        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
         printf "-rc \"sendfile " KEYS_DIR "/" validator "-wallet-query.boc\" ";
         print  "-rc \"quit\""
     }

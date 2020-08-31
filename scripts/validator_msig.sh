@@ -29,14 +29,14 @@ mkdir -p "${ELECTIONS_WORK_DIR}"
 
 "${TON_BUILD_DIR}/lite-client/lite-client" \
     -p "${KEYS_DIR}/liteserver.pub" \
-    -a 127.0.0.1:7071 \
+    -a 127.0.0.1:3031 \
     -rc "getconfig 1" -rc "quit" \
     &>"${ELECTIONS_WORK_DIR}/elector-addr"
 
 awk -v TON_BUILD_DIR="${TON_BUILD_DIR}" -v KEYS_DIR="${KEYS_DIR}" -v ELECTIONS_WORK_DIR="${ELECTIONS_WORK_DIR}" '{
     if (substr($1, length($1)-13) == "ConfigParam(1)") {
         printf TON_BUILD_DIR "/lite-client/lite-client ";
-        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:7071 ";
+        printf "-p " KEYS_DIR "/liteserver.pub -a 127.0.0.1:3031 ";
         printf "-rc \"runmethod -1:" substr($4, 15, 64) " ";
         print  "active_election_id\" -rc \"quit\" &> " ELECTIONS_WORK_DIR "/elector-state"
         printf "echo -1:" substr($4, 15, 64) " > " ELECTIONS_WORK_DIR "/elector-addr-base64"
@@ -56,7 +56,7 @@ election_id=$(cat "${ELECTIONS_WORK_DIR}/election-id")
 elector_addr=$(cat "${ELECTIONS_WORK_DIR}/elector-addr-base64")
 
 "${TON_BUILD_DIR}/lite-client/lite-client" \
-    -p "${KEYS_DIR}/liteserver.pub" -a 127.0.0.1:7071 \
+    -p "${KEYS_DIR}/liteserver.pub" -a 127.0.0.1:3031 \
     -rc "runmethod ${elector_addr} compute_returned_stake 0x$(echo "${MSIG_ADDR}" | cut -d ':' -f 2)" \
     -rc "quit" &>"${ELECTIONS_WORK_DIR}/recover-state"
 
@@ -121,20 +121,20 @@ date +"INFO: %F %T Elections $election_id"
 "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:3030 \
     -c "newkey" -c "quit" \
     &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-election-key"
 
 "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:3030 \
     -c "newkey" -c "quit" \
     &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-election-adnl-key"
 
 "${TON_BUILD_DIR}/lite-client/lite-client" \
     -p "${KEYS_DIR}/liteserver.pub" \
-    -a 127.0.0.1:7071 \
+    -a 127.0.0.1:3031 \
     -rc "getconfig 15" -rc "quit" \
     &>"${ELECTIONS_WORK_DIR}/elector-params"
 
@@ -161,7 +161,7 @@ awk -v validator="${VALIDATOR_NAME}" -v wallet_addr="$MSIG_ADDR" -v TON_BUILD_DI
         time = time + t[2] + 0;
         election_stop = time;
         printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
+        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
         printf "-c \"addpermkey " key " " election_start " " election_stop "\" ";
         printf "-c \"addtempkey " key " " key " " election_stop "\" ";
         printf "-c \"addadnl " key_adnl " 0\" ";
@@ -183,7 +183,7 @@ awk -v validator="${VALIDATOR_NAME}" -v TON_BUILD_DIR="${TON_BUILD_DIR}" -v KEYS
         request = $1
     } else if (($1 == "created") && ($2 == "new") && ($3 == "key")) {
         printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
+        printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
         printf "-c \"exportpub " $4 "\" ";
         print  "-c \"sign " $4 " " request "\" &> " ELECTIONS_WORK_DIR "/" validator "-request-dump1"
    }
@@ -227,7 +227,7 @@ if [ "$STAKE" -ge ${VALIDATOR_ACTUAL_BALANCE} ]; then
     exit 1
 fi
 
-MIN_STAKE=$("${TON_BUILD_DIR}/lite-client/lite-client" -p "${KEYS_DIR}/liteserver.pub" -a 127.0.0.1:7071 \
+MIN_STAKE=$("${TON_BUILD_DIR}/lite-client/lite-client" -p "${KEYS_DIR}/liteserver.pub" -a 127.0.0.1:3031 \
     -rc 'getconfig 17' -rc quit 2>&1 | grep -C 1 min_stake | grep value | awk -F: '{print $4}' | tr -d ')') # in nanotokens
 MIN_STAKE=$((MIN_STAKE / 1000000000)) # in tokens
 echo "INFO: MIN_STAKE = ${MIN_STAKE} tokens"
