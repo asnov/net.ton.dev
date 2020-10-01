@@ -7,13 +7,13 @@ SCRIPT_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd -P)
 TIME_DIFF=0
 
 "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:1010 \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
     -c "getstats" -c "quit"
 
 for i in $("${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
-    -a 127.0.0.1:7070 \
+    -a 127.0.0.1:1010 \
     -k "${KEYS_DIR}/client" \
     -p "${KEYS_DIR}/server.pub" \
     -c "getstats" -c "quit" 2>&1 | grep time | awk '{print $2}'); do

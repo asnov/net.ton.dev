@@ -58,7 +58,7 @@ awk '{
         if ($1 == "\"control\"") {
             print "      {";
             print "         \"id\": \"" server_id "\","
-            print "         \"port\": 7070,"
+            print "         \"port\": 1010,"
             print "         \"allowed\": ["
             print "            {";
             print "               \"id\": \"" client_id "\","
@@ -69,7 +69,7 @@ awk '{
         } else if ($1 == "\"liteservers\"") {
             print "      {";
             print "         \"id\": \"" liteserver_id "\","
-            print "         \"port\": 7071"
+            print "         \"port\": 1011"
             print "      }";
         }
     }
