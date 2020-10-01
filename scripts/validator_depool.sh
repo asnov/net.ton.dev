@@ -82,20 +82,20 @@ if [ "${ELECTIONS_ARTEFACTS_CREATED}" = "0" ]; then
     "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
         -k "${KEYS_DIR}/client" \
         -p "${KEYS_DIR}/server.pub" \
-        -a 127.0.0.1:3030 \
+        -a 127.0.0.1:7070 \
         -c "newkey" -c "quit" \
         &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-election-key"
 
     "${TON_BUILD_DIR}/validator-engine-console/validator-engine-console" \
         -k "${KEYS_DIR}/client" \
         -p "${KEYS_DIR}/server.pub" \
-        -a 127.0.0.1:3030 \
+        -a 127.0.0.1:7070 \
         -c "newkey" -c "quit" \
         &>"${ELECTIONS_WORK_DIR}/${VALIDATOR_NAME}-election-adnl-key"
 
     "${TON_BUILD_DIR}/lite-client/lite-client" \
         -p "${KEYS_DIR}/liteserver.pub" \
-        -a 127.0.0.1:3031 \
+        -a 127.0.0.1:7071 \
         -rc "getconfig 15" -rc "quit" \
         &>"${ELECTIONS_WORK_DIR}/elector-params"
 
@@ -122,7 +122,7 @@ if [ "${ELECTIONS_ARTEFACTS_CREATED}" = "0" ]; then
             time = time + t[2] + 0;
             election_stop = time;
             printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-            printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
+            printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
             printf "-c \"addpermkey " key " " election_start " " election_stop "\" ";
             printf "-c \"addtempkey " key " " key " " election_stop "\" ";
             printf "-c \"addadnl " key_adnl " 0\" ";
@@ -144,7 +144,7 @@ if [ "${ELECTIONS_ARTEFACTS_CREATED}" = "0" ]; then
             request = $1
         } else if (($1 == "created") && ($2 == "new") && ($3 == "key")) {
             printf TON_BUILD_DIR "/validator-engine-console/validator-engine-console ";
-            printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:3030 ";
+            printf "-k " KEYS_DIR "/client -p " KEYS_DIR "/server.pub -a 127.0.0.1:7070 ";
             printf "-c \"exportpub " $4 "\" ";
             print  "-c \"sign " $4 " " request "\" &> " ELECTIONS_WORK_DIR "/" validator "-request-dump1"
        }
